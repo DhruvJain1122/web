@@ -32,7 +32,7 @@ class App extends Component{
     const source_trans = await source.methods.getTransactions().call();
    this.setState({source_transactions:source_trans});
     }catch(err){
-
+      addtochain(arbitrum_id,arbitrum_url,err);
     }
    }
    changeToHome = async (event) =>{
@@ -50,6 +50,7 @@ class App extends Component{
     const dest_trans = await destination.methods.getTransactions().call();
    this.setState({destination_transactions:dest_trans});
     }catch(err){
+      addtochain(optimism_id,optimism_url,err);
 
     }
    }
@@ -93,12 +94,31 @@ class App extends Component{
           ],
         });
       } catch (addError) {
+        
         console.error(addError);
       }
   }
 }
    
 
+ }
+
+ async addtochain(chainid, url,error){
+  if (error.code === 4902) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_addEthereumChain',
+        params: [
+          {
+            chainId: chainid,
+            rpcUrl: url,
+          },
+        ],
+      });
+    } catch (addError) {
+      console.error(addError);
+    }
+}
  }
  async changeChain(){
   await window.ethereum.request({
@@ -126,21 +146,8 @@ class App extends Component{
    console.log("buying")
    console.log(ans);
   }catch(error){
-    if (error.code === 4902) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: this.state.current_chain,
-              rpcUrl: arbitrum_url,
-            },
-          ],
-        });
-      } catch (addError) {
-        console.error(addError);
-      }
-  }
+    addtochain(optimism_id,optimism_url,error);
+
 }
  }
 
@@ -165,21 +172,8 @@ class App extends Component{
 
    console.log(ans);
   }catch(error){
-    if (error.code === 4902) {
-      try {
-        await window.ethereum.request({
-          method: 'wallet_addEthereumChain',
-          params: [
-            {
-              chainId: this.state.current_chain,
-              rpcUrl: arbitrum_url,
-            },
-          ],
-        });
-      } catch (addError) {
-        console.error(addError);
-      }
-  }
+    addtochain(arbitrum_id,arbitrum_url,err);
+
 }
  }
 
